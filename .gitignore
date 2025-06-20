@@ -1,0 +1,9 @@
+StarterApp/bin/
+StarterApp/obj/
+StarterApp.Database/obj/
+StarterApp.Database/bin/
+StarterApp.Database/appsettings.json
+StarterApp.Migrations/obj/
+StarterApp.Migratins/bin/
+.vscode
+.fake
