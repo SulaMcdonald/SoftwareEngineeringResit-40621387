@@ -7,6 +7,9 @@
              Title="User Management">
 
     <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Home" 
+                     Command="{Binding NavigateToDashboardCommand}"
+                     IconImageSource="home.png" />
         <ToolbarItem Text="Add User" 
                      Command="{Binding CreateUserCommand}"
                      IconImageSource="add_user.png" />
@@ -42,7 +45,6 @@
             <Picker Grid.Column="1"
                     ItemsSource="{Binding RoleFilterOptions}"
                     SelectedItem="{Binding SelectedRoleFilter}"
-                    Title="Select Role"
                     FontSize="14" />
         </Grid>
 

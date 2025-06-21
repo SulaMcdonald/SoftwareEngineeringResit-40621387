@@ -6,30 +6,85 @@ using Microsoft.EntityFrameworkCore;
 using StarterApp.Database.Data;
 using StarterApp.Database.Models;
 using StarterApp.Services;
+using CommunityToolkit.Mvvm.Input;
 
 namespace StarterApp.ViewModels;
 
+/// <summary>
+/// ViewModel for managing user details including creation, editing, and role management.
+/// Handles both new user creation and existing user modification scenarios.
+/// </summary>
+/// <remarks>
+/// This ViewModel provides comprehensive user management functionality including:
+/// - User creation with password validation
+/// - User profile editing
+/// - Role assignment and removal
+/// - User deletion (soft delete)
+/// - Input validation and error handling
+/// </remarks>
 [QueryProperty(nameof(UserId), "userId")]
-public class UserDetailViewModel : INotifyPropertyChanged
+public partial class UserDetailViewModel : INotifyPropertyChanged
 {
+    #region Private Fields
+    
+    /// <summary>Database context for data operations</summary>
     private readonly AppDbContext _context;
+    
+    /// <summary>Navigation service for page transitions</summary>
     private readonly INavigationService _navigationService;
+    
+    /// <summary>Authentication service for user role verification</summary>
     private readonly IAuthenticationService _authService;
 
+    /// <summary>The ID of the user being edited (0 for new users)</summary>
     private int _userId;
+    
+    /// <summary>The current user entity being edited</summary>
     private User? _currentUser;
+    
+    /// <summary>User's first name</summary>
     private string _firstName = string.Empty;
+    
+    /// <summary>User's last name</summary>
     private string _lastName = string.Empty;
+    
+    /// <summary>User's email address</summary>
     private string _email = string.Empty;
+    
+    /// <summary>User's password (for new users only)</summary>
     private string _password = string.Empty;
+    
+    /// <summary>Password confirmation field</summary>
     private string _confirmPassword = string.Empty;
+    
+    /// <summary>Whether the user account is active</summary>
     private bool _isActive = true;
+    
+    /// <summary>Loading state indicator</summary>
     private bool _isLoading = false;
+    
+    /// <summary>Flag indicating if this is a new user creation</summary>
     private bool _isNewUser = false;
+    
+    /// <summary>Error message to display to user</summary>
     private string _errorMessage = string.Empty;
+    
+    /// <summary>Success message to display to user</summary>
     private string _successMessage = string.Empty;
+    
+    /// <summary>Collection of all available roles for assignment</summary>
     private ObservableCollection<RoleItem> _availableRoles = new();
 
+    #endregion
+
+    #region Constructor
+
+    /// <summary>
+    /// Initializes a new instance of the UserDetailViewModel class.
+    /// </summary>
+    /// <param name="context">The database context for data operations</param>
+    /// <param name="navigationService">The navigation service for page transitions</param>
+    /// <param name="authService">The authentication service for role verification</param>
     public UserDetailViewModel(AppDbContext context, INavigationService navigationService, IAuthenticationService authService)
     {
         _context = context;
@@ -49,6 +104,14 @@ public class UserDetailViewModel : INotifyPropertyChanged
         };
     }
 
+    #endregion
+
+    #region Public Properties
+
+    /// <summary>
+    /// Gets or sets the user ID. Setting this property triggers user loading.
+    /// </summary>
+    /// <value>The user ID (0 for new users)</value>
     public int UserId
     {
         get => _userId;
@@ -60,6 +123,10 @@ public class UserDetailViewModel : INotifyPropertyChanged
         }
     }
 
+    /// <summary>
+    /// Gets or sets the user's first name.
+    /// </summary>
+    /// <value>The first name of the user</value>
     public string FirstName
     {
         get => _firstName;
@@ -71,6 +138,10 @@ public class UserDetailViewModel : INotifyPropertyChanged
         }
     }
 
+    /// <summary>
+    /// Gets or sets the user's last name.
+    /// </summary>
+    /// <value>The last name of the user</value>
     public string LastName
     {
         get => _lastName;
@@ -82,6 +153,10 @@ public class UserDetailViewModel : INotifyPropertyChanged
         }
     }
 
+    /// <summary>
+    /// Gets or sets the user's email address.
+    /// </summary>
+    /// <value>The email address of the user</value>
     public string Email
     {
         get => _email;
@@ -93,6 +168,10 @@ public class UserDetailViewModel : INotifyPropertyChanged
         }
     }
 
+    /// <summary>
+    /// Gets or sets the user's password (visible only for new users).
+    /// </summary>
+    /// <value>The password for new user accounts</value>
     public string Password
     {
         get => _password;
@@ -104,6 +183,10 @@ public class UserDetailViewModel : INotifyPropertyChanged
         }
     }
 
+    /// <summary>
+    /// Gets or sets the password confirmation field.
+    /// </summary>
+    /// <value>The password confirmation string</value>
     public string ConfirmPassword
     {
         get => _confirmPassword;
@@ -115,6 +198,10 @@ public class UserDetailViewModel : INotifyPropertyChanged
         }
     }
 
+    /// <summary>
+    /// Gets or sets whether the user account is active.
+    /// </summary>
+    /// <value>True if the user account is active, false otherwise</value>
     public bool IsActive
     {
         get => _isActive;
@@ -125,6 +212,10 @@ public class UserDetailViewModel : INotifyPropertyChanged
         }
     }
 
+    /// <summary>
+    /// Gets or sets the loading state of the view model.
+    /// </summary>
+    /// <value>True if an operation is in progress, false otherwise</value>
     public bool IsLoading
     {
         get => _isLoading;
@@ -135,6 +226,10 @@ public class UserDetailViewModel : INotifyPropertyChanged
         }
     }
 
+    /// <summary>
+    /// Gets or sets whether this is a new user creation scenario.
+    /// </summary>
+    /// <value>True if creating a new user, false if editing existing user</value>
     public bool IsNewUser
     {
         get => _isNewUser;
@@ -145,6 +240,10 @@ public class UserDetailViewModel : INotifyPropertyChanged
         }
     }
 
+    /// <summary>
+    /// Gets or sets the error message to display to the user.
+    /// </summary>
+    /// <value>The error message string</value>
     public string ErrorMessage
     {
         get => _errorMessage;
@@ -155,6 +254,10 @@ public class UserDetailViewModel : INotifyPropertyChanged
         }
     }
 
+    /// <summary>
+    /// Gets or sets the success message to display to the user.
+    /// </summary>
+    /// <value>The success message string</value>
     public string SuccessMessage
     {
         get => _successMessage;
@@ -165,6 +268,10 @@ public class UserDetailViewModel : INotifyPropertyChanged
         }
     }
 
+    /// <summary>
+    /// Gets or sets the collection of available roles for assignment.
+    /// </summary>
+    /// <value>Observable collection of role items</value>
     public ObservableCollection<RoleItem> AvailableRoles
     {
         get => _availableRoles;
@@ -175,16 +282,62 @@ public class UserDetailViewModel : INotifyPropertyChanged
         }
     }
 
+    /// <summary>
+    /// Gets the page title based on whether this is a new user or edit scenario.
+    /// </summary>
+    /// <value>"Create New User" for new users, "Edit User" for existing users</value>
     public string PageTitle => IsNewUser ? "Create New User" : "Edit User";
+    
+    /// <summary>
+    /// Gets whether password fields should be shown (only for new users).
+    /// </summary>
+    /// <value>True if password fields should be visible, false otherwise</value>
     public bool ShowPasswordFields => IsNewUser;
+    
+    /// <summary>
+    /// Gets whether the current user can be deleted (not new user and not the currently logged-in user).
+    /// </summary>
+    /// <value>True if the user can be deleted, false otherwise</value>
     public bool CanDeleteCurrentUser => !IsNewUser && _currentUser?.Id != _authService.CurrentUser?.Id;
 
+    #endregion
+
+    #region Commands
+
+    /// <summary>Command to save the user (create or update)</summary>
     public ICommand SaveUserCommand { get; }
+    
+    /// <summary>Command to delete the user</summary>
     public ICommand DeleteUserCommand { get; }
+    
+    /// <summary>Command to add a role to the user</summary>
     public ICommand AddRoleCommand { get; }
+    
+    /// <summary>Command to remove a role from the user</summary>
     public ICommand RemoveRoleCommand { get; }
+    
+    /// <summary>Command to navigate back to the user list</summary>
     public ICommand BackCommand { get; }
 
+    #endregion
+
+    #region Private Methods
+
+    /// @brief Navigates to the dashboard page
+    /// @return A task representing the asynchronous navigation operation
+    [RelayCommand]
+    private async Task NavigateToDashboardAsync()
+    {
+        await _navigationService.NavigateToAsync("MainPage");
+    }
+
+    /// <summary>
+    /// Loads user data based on the current UserId.
+    /// For UserId = 0, initializes new user creation mode.
+    /// For UserId > 0, loads existing user data from database.
+    /// </summary>
+    /// <returns>A task representing the asynchronous operation</returns>
+    /// <exception cref="UnauthorizedAccessException">Thrown when user doesn't have admin role</exception>
     private async Task LoadUserAsync()
     {
         if (!_authService.HasRole(RoleConstants.Admin))
@@ -266,6 +419,13 @@ public class UserDetailViewModel : INotifyPropertyChanged
         }
     }
 
+    /// <summary>
+    /// Determines whether the save user command can be executed.
+    /// </summary>
+    /// <returns>True if the save command can be executed, false otherwise</returns>
+    /// <remarks>
+    /// Validates that required fields are filled and for new users, password fields are completed.
+    /// </remarks>
     private bool CanSaveUser()
     {
         return !IsLoading && 
@@ -275,6 +435,11 @@ public class UserDetailViewModel : INotifyPropertyChanged
                (!IsNewUser || (!string.IsNullOrWhiteSpace(Password) && !string.IsNullOrWhiteSpace(ConfirmPassword)));
     }
 
+    /// <summary>
+    /// Saves the user data (creates new user or updates existing user).
+    /// </summary>
+    /// <returns>A task representing the asynchronous save operation</returns>
+    /// <exception cref="InvalidOperationException">Thrown when validation fails or duplicate email exists</exception>
     private async Task SaveUserAsync()
     {
         ClearMessages();
@@ -312,6 +477,11 @@ public class UserDetailViewModel : INotifyPropertyChanged
         }
     }
 
+    /// <summary>
+    /// Creates a new user in the database with the specified details and roles.
+    /// </summary>
+    /// <returns>A task representing the asynchronous create operation</returns>
+    /// <exception cref="InvalidOperationException">Thrown when a user with the same email already exists</exception>
     private async Task CreateUserAsync()
     {
         // Check if user already exists
@@ -358,6 +528,11 @@ public class UserDetailViewModel : INotifyPropertyChanged
         IsNewUser = false;
     }
 
+    /// <summary>
+    /// Updates an existing user's information in the database.
+    /// </summary>
+    /// <returns>A task representing the asynchronous update operation</returns>
+    /// <exception cref="InvalidOperationException">Thrown when email is already used by another user</exception>
     private async Task UpdateUserAsync()
     {
         if (_currentUser == null) return;
@@ -380,11 +555,23 @@ public class UserDetailViewModel : INotifyPropertyChanged
         await _context.SaveChangesAsync();
     }
 
+    /// <summary>
+    /// Determines whether the delete user command can be executed.
+    /// </summary>
+    /// <returns>True if the delete command can be executed, false otherwise</returns>
     private bool CanDeleteUser()
     {
         return !IsLoading && !IsNewUser && CanDeleteCurrentUser;
     }
 
+    /// <summary>
+    /// Performs a soft delete of the current user after confirmation.
+    /// </summary>
+    /// <returns>A task representing the asynchronous delete operation</returns>
+    /// <remarks>
+    /// This method performs a soft delete by setting IsActive to false and DeletedAt timestamp.
+    /// It also deactivates all associated user roles.
+    /// </remarks>
     private async Task DeleteUserAsync()
     {
         if (_currentUser == null) return;
@@ -428,6 +615,14 @@ public class UserDetailViewModel : INotifyPropertyChanged
         }
     }
 
+    /// <summary>
+    /// Adds a role to the current user.
+    /// </summary>
+    /// <param name="role">The role to add to the user</param>
+    /// <returns>A task representing the asynchronous add role operation</returns>
+    /// <remarks>
+    /// Only works for existing users (not new user creation mode).
+    /// </remarks>
     private async Task AddRoleAsync(RoleItem role)
     {
         if (_currentUser == null || role.IsAssigned) return;
@@ -449,6 +644,14 @@ public class UserDetailViewModel : INotifyPropertyChanged
         }
     }
 
+    /// <summary>
+    /// Removes a role from the current user.
+    /// </summary>
+    /// <param name="role">The role to remove from the user</param>
+    /// <returns>A task representing the asynchronous remove role operation</returns>
+    /// <remarks>
+    /// Performs a soft delete by marking the user role as deleted rather than physically removing it.
+    /// </remarks>
     private async Task RemoveRoleAsync(RoleItem role)
     {
         if (_currentUser == null || !role.IsAssigned) return;
@@ -476,6 +679,14 @@ public class UserDetailViewModel : INotifyPropertyChanged
         }
     }
 
+    /// <summary>
+    /// Validates all user input fields.
+    /// </summary>
+    /// <returns>True if all validation passes, false otherwise</returns>
+    /// <remarks>
+    /// Validates required fields, email format, and password requirements for new users.
+    /// Sets appropriate error messages when validation fails.
+    /// </remarks>
     private bool ValidateInput()
     {
         if (string.IsNullOrWhiteSpace(FirstName))
@@ -526,6 +737,11 @@ public class UserDetailViewModel : INotifyPropertyChanged
         return true;
     }
 
+    /// <summary>
+    /// Validates email address format using regular expression.
+    /// </summary>
+    /// <param name="email">The email address to validate</param>
+    /// <returns>True if email format is valid, false otherwise</returns>
     private bool IsValidEmail(string email)
     {
         if (string.IsNullOrWhiteSpace(email))
@@ -542,33 +758,83 @@ public class UserDetailViewModel : INotifyPropertyChanged
         }
     }
 
+    /// <summary>
+    /// Navigates back to the user list page.
+    /// </summary>
+    /// <returns>A task representing the asynchronous navigation operation</returns>
     private async Task NavigateBackAsync()
     {
         await _navigationService.NavigateToAsync("UserListPage");
     }
 
+    /// <summary>
+    /// Clears both error and success messages.
+    /// </summary>
     private void ClearMessages()
     {
         ErrorMessage = string.Empty;
         SuccessMessage = string.Empty;
     }
 
+    #endregion
+
+    #region INotifyPropertyChanged
+
+    /// <summary>
+    /// Occurs when a property value changes.
+    /// </summary>
     public event PropertyChangedEventHandler? PropertyChanged;
 
+    /// <summary>
+    /// Raises the PropertyChanged event for the specified property.
+    /// </summary>
+    /// <param name="propertyName">The name of the property that changed</param>
     protected virtual void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
+
+    #endregion
 }
 
+/// <summary>
+/// Represents a role item in the user interface with assignment state.
+/// </summary>
+/// <remarks>
+/// This class is used to display roles in the UI with the ability to track
+/// whether the role is assigned to the current user and provide appropriate
+/// button text and colors for add/remove actions.
+/// </remarks>
 public class RoleItem : INotifyPropertyChanged
 {
+    /// <summary>Flag indicating whether this role is assigned to the current user</summary>
     private bool _isAssigned;
 
+    /// <summary>
+    /// Gets or sets the unique identifier for the role.
+    /// </summary>
+    /// <value>The role ID</value>
     public int Id { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the name of the role.
+    /// </summary>
+    /// <value>The role name</value>
     public string Name { get; set; } = string.Empty;
+    
+    /// <summary>
+    /// Gets or sets the description of the role.
+    /// </summary>
+    /// <value>The role description</value>
     public string Description { get; set; } = string.Empty;
     
+    /// <summary>
+    /// Gets or sets whether this role is assigned to the current user.
+    /// </summary>
+    /// <value>True if the role is assigned, false otherwise</value>
+    /// <remarks>
+    /// Setting this property also updates the ButtonText and ButtonColor properties.
+    /// </remarks>
     public bool IsAssigned
     {
         get => _isAssigned;
@@ -581,11 +847,27 @@ public class RoleItem : INotifyPropertyChanged
         }
     }
 
+    /// <summary>
+    /// Gets the text to display on the action button.
+    /// </summary>
+    /// <value>"Remove" if assigned, "Add" if not assigned</value>
     public string ButtonText => IsAssigned ? "Remove" : "Add";
+    
+    /// <summary>
+    /// Gets the color for the action button.
+    /// </summary>
+    /// <value>Red (#dc3545) if assigned, Green (#28a745) if not assigned</value>
     public Color ButtonColor => IsAssigned ? Color.FromArgb("#dc3545") : Color.FromArgb("#28a745");
 
+    /// <summary>
+    /// Occurs when a property value changes.
+    /// </summary>
     public event PropertyChangedEventHandler? PropertyChanged;
 
+    /// <summary>
+    /// Raises the PropertyChanged event for the specified property.
+    /// </summary>
+    /// <param name="propertyName">The name of the property that changed</param>
     protected virtual void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

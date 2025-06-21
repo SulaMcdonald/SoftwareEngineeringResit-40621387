@@ -90,7 +90,7 @@ public class AuthenticationService : IAuthenticationService
             await _context.SaveChangesAsync();
 
             // Assign default "User" role
-            var userRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "User");
+            var userRole = await _context.Roles.FirstOrDefaultAsync(r => r.IsDefault == true);
             if (userRole != null)
             {
                 var userRoleAssignment = new UserRole(user.Id, userRole.Id);

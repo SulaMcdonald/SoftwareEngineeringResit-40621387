@@ -6,21 +6,6 @@
     xmlns:views="clr-namespace:StarterApp.Views"
     Shell.FlyoutBehavior="Disabled">
 
-    <TabBar>
-        <Tab Title="Main">
-            <ShellContent ContentTemplate="{DataTemplate views:LoginPage}" />
-        </Tab>
-        <Tab Title="About">
-            <ShellContent ContentTemplate="{DataTemplate views:AboutPage}" />
-        </Tab>
-    </TabBar>
+    <ShellContent ContentTemplate="{DataTemplate views:LoginPage}" />
 
-    <Shell.MenuBarItems>
-        <MenuBarItem Text="Action">
-            <MenuFlyoutItem Text="Logout" Command="{Binding LogoutCommand}" />
-            <MenuFlyoutItem Text="Settings" Command="{Binding NavigateToSettingsCommand}" />
-            <MenuFlyoutItem Text="Profile" Command="{Binding NavigateToProfileCommand}" />
-            <MenuFlyoutItem Text="Admin Panel" Command="{Binding NavigateToAdminCommand}" />
-        </MenuBarItem>
-    </Shell.MenuBarItems>
 </Shell>

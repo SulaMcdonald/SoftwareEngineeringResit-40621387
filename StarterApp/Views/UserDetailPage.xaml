@@ -5,6 +5,12 @@
              Title="{Binding PageTitle}"
              Shell.BackButtonBehavior="{x:Null}">
 
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Home" 
+                     Command="{Binding NavigateToDashboardCommand}"
+                     IconImageSource="home.png" />
+    </ContentPage.ToolbarItems>
+
     <ScrollView>
         <Grid Padding="20">
             <Grid.RowDefinitions>
