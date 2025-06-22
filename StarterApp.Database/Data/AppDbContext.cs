@@ -24,8 +24,7 @@ public class AppDbContext : DbContext
             .Build();
 
         optionsBuilder.UseSqlServer(
-            config.GetConnectionString("DevelopmentConnection"),
-            m => m.MigrationsAssembly("StarterApp.Migrations")
+            config.GetConnectionString("DevelopmentConnection")
         );
     }
 
