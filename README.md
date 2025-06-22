@@ -29,10 +29,10 @@ The instructions assume you will be using VSCode since that is a lowest-common-d
 
 This app is built using the following tool versions.
 
-| Name                    | Version     | Link                                                                                                                             |
-|-------------------------|-------------|----------------------------------------------------------------------------------------------------------------------------------|
-| .NET                    | 9.0         | [https://dotnet.microsoft.com/en-us/](https://dotnet.microsoft.com/en-us/)                                                       |
-| SQL Server Docker image | 2025-latest | [https://mcr.microsoft.com/en-us/artifact/mar/mssql/server/tags](https://mcr.microsoft.com/en-us/artifact/mar/mssql/server/tags) |
+| Name                                                                                      | Version     | 
+|-------------------------------------------------------------------------------------------|-------------|
+| [.NET](https://dotnet.microsoft.com/en-us/)                                               | 9.0         |
+| [SQL Server Docker image](https://mcr.microsoft.com/en-us/artifact/mar/mssql/server/tags) | 2025-latest |
 
 
 ## Getting started
