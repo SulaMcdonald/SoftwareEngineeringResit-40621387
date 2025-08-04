@@ -26,6 +26,7 @@ public class User
 
     // Navigation properties
     public List<UserRole> UserRoles { get; set; } = new List<UserRole>();
+    public List<UserConference> UserConferences { get; set; } = new List<UserConference>();
     
     [NotMapped]
     public string FullName => $"{FirstName} {LastName}";

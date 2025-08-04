@@ -31,6 +31,8 @@ public class AppDbContext : DbContext
     public DbSet<Role> Roles { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<UserRole> UserRoles { get; set; }
+    public DbSet<Conference> Conferences { get; set; }
+    public DbSet<UserConference> UserConferences { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -68,6 +70,30 @@ public class AppDbContext : DbContext
                   .WithMany(r => r.UserRoles)
                   .HasForeignKey(ur => ur.RoleId);
         });
+
+        // Configure Conference entity
+        modelBuilder.Entity<Conference>(entity =>
+        {
+            entity.HasOne(c => c.Speaker)
+                .WithMany() 
+                .HasForeignKey(c => c.SpeakerId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // Configure UserConference entity
+        modelBuilder.Entity<UserConference>(entity =>
+        {
+            entity.HasKey(uc => new { uc.UserId, uc.ConferenceId });
+
+            entity.HasOne(uc => uc.User)
+                .WithMany(u => u.UserConferences)
+                .HasForeignKey(uc => uc.UserId);
+
+            entity.HasOne(uc => uc.Conference)
+                .WithMany(c => c.UserConferences)
+                .HasForeignKey(uc => uc.ConferenceId);
+        });
+
     }
 
 }
