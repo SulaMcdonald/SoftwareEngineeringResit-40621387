@@ -16,14 +16,7 @@ public partial class App : Application
 		Routing.RegisterRoute(nameof(Views.UserListPage), typeof(Views.UserListPage));
 		Routing.RegisterRoute(nameof(Views.UserDetailPage), typeof(Views.UserDetailPage));
 		Routing.RegisterRoute(nameof(Views.TempPage), typeof(Views.TempPage));
-	
-	#if DEBUG
-    // Delay the navigation slightly to allow Shell to initialize
-    Device.BeginInvokeOnMainThread(async () =>
-    {
-        await Shell.Current.GoToAsync($"//{nameof(Views.MainPage)}");
-    });
-#endif
+		Routing.RegisterRoute(nameof(Views.CreateConferencePage), typeof(Views.CreateConferencePage));
 	}
 
 	protected override Window CreateWindow(IActivationState? activationState)
