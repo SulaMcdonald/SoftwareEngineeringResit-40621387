@@ -1,8 +1,9 @@
 {
   "profiles": {
-    "Windows Machine": {
-      "commandName": "MsixPackage",
-      "nativeDebugging": false
+    "StarterApp": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "targetFramework": "net8.0-maccatalyst"
     }
   }
 }
